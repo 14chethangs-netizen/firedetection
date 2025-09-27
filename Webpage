@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 Fire Detection Dashboard 🔥</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0; padding: 0;
+  background: linear-gradient(160deg, #ffb347, #ffcc33);
+  overflow-y: auto;
+  color: #222;
+  min-height: 100vh;
+}
+h1 {
+  font-size: 3em;
+  text-align: center;
+  margin: 30px 0 10px;
+  color: #d84315;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+}
+/* Smoke animation */
+@keyframes smoke {0% {transform: translateY(0) scale(1); opacity:0.1;}50% {transform: translateY(-60px) scale(1.1); opacity:0.4;}100% {transform: translateY(-120px) scale(1.2); opacity:0;}}
+.smoke {position:absolute; width:50px; height:50px; background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%); border-radius:50%; animation: smoke 6s infinite; pointer-events:none;}
+/* Cards */
+.card {background-color: rgba(255,255,255,0.95); border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.3); width:700px; max-width:90%; margin:40px auto; padding:20px; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;}
+.card:hover {transform: translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.35);}
+.video-container, .map-container {border-radius:15px; overflow:hidden; border:2px solid #ccc; box-shadow:0 4px 15px rgba(0,0,0,0.2);}
+.video-container img {width:100%; height:auto; display:block;}
+#fire-alert {color:red; font-size:2em; font-weight:bold; margin-top:15px; text-shadow:1px 1px 4px rgba(0,0,0,0.3); display:none; animation: pulse 1s infinite;}
+@keyframes pulse {0% {transform:scale(1);}50% {transform:scale(1.1);}100% {transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<h1>🔥 Fire Detection Dashboard 🔥</h1>
+
+<!-- Smoke -->
+<div class="smoke" style="left:10%; animation-delay:0s;"></div>
+<div class="smoke" style="left:30%; animation-delay:2s;"></div>
+<div class="smoke" style="left:60%; animation-delay:4s;"></div>
+<div class="smoke" style="left:80%; animation-delay:1s;"></div>
+
+<!-- Video Card -->
+<div class="card" id="camera-frame">
+  <div class="video-container">
+    <img id="video" src="/video_feed" alt="Camera Feed"/>
+  </div>
+  <div id="fire-alert">🔥 Fire Detected!</div>
+</div>
+
+<!-- Map Card -->
+<div class="card map-container">
+  <iframe src="Embedded Map"></iframe>
+</div>
+
+<script>
+const fireAlert = document.getElementById('fire-alert');
+const cameraFrame = document.getElementById('camera-frame');
+
+function checkFireStatus() {
+  fetch('/fire_status')
+    .then(res => res.json())
+    .then(data => {
+      if(data.fire_detected){
+        fireAlert.style.display = 'block';
+        cameraFrame.style.borderColor = 'red';  // Highlight card
+      } else {
+        fireAlert.style.display = 'none';
+        cameraFrame.style.borderColor = '';
+      }
+    });
+}
+
+setInterval(checkFireStatus, 1000);
+</script>
+
+</body>
+</html>
